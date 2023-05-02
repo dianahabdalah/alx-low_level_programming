@@ -10,37 +10,33 @@
  */
 size_t print_listint_safe(const listint_t *head)
 {
-	const listint_t *slow_node = head, *fast_node = head;
-	size_t node_count = 0;
+	const listint_t *current = head, *loop_start = NULL;
+	size_t count = 0;
 
-	while (slow_node != NULL && fast_node != NULL && fast_node->next != NULL)
+	while (current != NULL)
 	{
-		printf("[%p] %d\n", (void *)slow_node, slow_node->n);
-		node_count++;
+		if (current > current->next && loop_start == NULL)
+			loop_start = current;
 
-		slow_node = slow_node->next;
-		fast_node = fast_node->next->next;
+		printf("[%p] %d\n", (void *)current, current->n);
+		count++;
+		current = current->next;
 
-		if (slow_node == fast_node)
+		if (current == loop_start)
 		{
-			printf("[%p] %d\n", (void *)slow_node, slow_node->n);
-			node_count++;
+			printf("Loop starts at [%p] %d\n", (void *)loop_start, loop_start->n);
 			break;
 		}
 	}
 
-	while (head != NULL && node_count == 0)
-	{
-		printf("[%p] %d\n", (void *)head, head->n);
-		node_count++;
-		head = head->next;
-	}
+	if (loop_start != NULL)
+		count += printf("-> [%p] %d\n", (void *)loop_start, loop_start->n);
 
-	if (node_count == 0)
+	if (count == 0)
 	{
 		fprintf(stderr, "Error: empty list\n");
 		exit(98);
 	}
 
-	return (node_count);
+	return (count);
 }
